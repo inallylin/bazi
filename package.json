@@ -34,7 +34,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src tests",
     "lint:fix": "eslint src tests --fix",
-    "prepublishOnly": "npm run typecheck && npm run lint && npm run build"
+    "prepublishOnly": "npm run typecheck && npm run lint && npm run build",
+    "playground": "npm --prefix playground install && npm --prefix playground run dev",
+    "playground:build": "npm --prefix playground install && npm --prefix playground run build"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.10.0",
