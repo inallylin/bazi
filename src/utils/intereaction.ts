@@ -381,17 +381,20 @@ export const getBranchInsteractions = (branch: Branch): Interaction<'branch'>[] 
     })
 }
 
+// 妒合=0.9, 合絆=0.8, 沒有質變
+
+// 回傳的係數每個坑都要拿一份，如果坑上有多人平均分攤
+// 例如三合, 如果是全合1.8 [亥亥卯未] 亥每位只能拿1.8/2, 卯*1.8, 未*1.8
+
 export const setInteractionMultiplier = (branchInteraction: Interaction<'branch'>): Calculation | null => {
   const seatCounts = Object.values(branchInteraction.memberMap).map(s => s.length)
   const emptyCount = seatCounts.filter(v => !v).length
   const hasMultiple = seatCounts.some(count => count > 1)
-  // 三半合x1.25(等流年大運生效)
+  // 三半合x1.25(可等流年大運生效)
   if (branchInteraction.type === 'season' && emptyCount === 1) {
-    const isStock = seatCounts[0] === 0
+    const isStock = seatCounts[0] === 0 // 庫旺 vs 生旺
     return {
-      multiplier: hasMultiple
-        ? 0.8 // isTrapped = 0.8
-        : isStock ? 1.1 : 1.25,
+      multiplier: isStock ? 1.1 : 1.25,
       transform: null
     }
   }
@@ -407,13 +410,13 @@ export const setInteractionMultiplier = (branchInteraction: Interaction<'branch'
   // 三合: 長生+地旺+墓庫, 全合x1.8
   } else if (branchInteraction.type === 'season') {
     return {
-      multiplier: hasMultiple ? 0.8 : 1.8, // isTrapped = 0.8
+      multiplier: 1.8,
       transform: branchInteraction.transform
     }
     // 合 1.4
   } else if (branchInteraction.type === 'merge') {
     return {
-      multiplier: hasMultiple ? 0.9 : 1.4,  // 妒合=0.9 但作用不太一樣
+      multiplier: 1.4,
       transform: branchInteraction.transform
     }
     // 沖 0.5
