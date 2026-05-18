@@ -1,9 +1,16 @@
-import type { BaziChart, Branch, GrowthStage, HiddenStems, Pillar, Stem } from '@/types.js'
+import lunisolar from 'lunisolar'
 import { getGrowthStage, getHiddenStems } from '@/utils/index.js'
 import { BRANCHES, STEMS } from '@/static/index.js'
+import { char8ex } from '@lunisolar/plugin-char8ex'
+import type { Lunisolar } from 'lunisolar'
+import type { BaziChart, Branch, GrowthStage, HiddenStems, Pillar, Stem } from '@/types.js'
+
+// TODO: lunisolar only use for biulding pillars
+lunisolar.extend(char8ex)
 
 export class Bazi {
   private readonly datetime: Date
+  private readonly lunarData: Lunisolar
   public readonly chart: BaziChart
 
   /**
@@ -11,6 +18,7 @@ export class Bazi {
    */
   constructor(datetime: string | Date) {
     this.datetime = new Date(datetime)
+    this.lunarData = lunisolar(datetime)
     if (isNaN(this.datetime.getTime())) {
       throw new Error(`Invalid datetime: "${datetime}"`)
     }
@@ -31,7 +39,10 @@ export class Bazi {
 
   // ─── Chart construction ────────────────────────────────────────────────────
 
+
   private buildChart(): BaziChart {
+    const c8 = this.lunarData.char8ex(1)
+    c8.gods.day.toString
     return {
       year:  this.getYearPillar(),
       month: this.getMonthPillar(),

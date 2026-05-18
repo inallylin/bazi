@@ -1,4 +1,4 @@
-import type { Branch, GrowthStage, Stem } from '@/types.js'
+import type { Branch, GrowthStage, Stem } from '@/types'
 
 /**
  * 十二長生對照表

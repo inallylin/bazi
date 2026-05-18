@@ -47,5 +47,10 @@
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
     "vitest": "^2.0.0"
+  },
+  "dependencies": {
+    "@lunisolar/plugin-char8ex": "^0.2.5",
+    "@lunisolar/plugin-takesound": "^0.1.2",
+    "lunisolar": "^2.6.0"
   }
 }
