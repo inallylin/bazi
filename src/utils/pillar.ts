@@ -1,3 +1,38 @@
+import { Stem } from "@/types"
+
+type Interaction = {
+    
+}
+
+type ScoreCalculation = {
+    interaction: Interaction
+    formula: (_n: number) => number
+    sort: number
+}
+
+type Score = {
+    base: number
+    calculations: ScoreCalculation[]
+    final: number
+}
+
+type StemDetail = {
+    id: number
+    name: Stem
+    felement: string
+    polarity: 1 | 0
+    score: Score
+}
+
+type BranchDetail = {}
+
+type Pillar = {
+    stem: StemDetail
+    branch: BranchDetail
+    interaction: Interaction
+}
+
+
 export const createPillar = () => {
 // const pi = {
 //   stem: {
