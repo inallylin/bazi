@@ -9,7 +9,8 @@ export type Branch =
   | '午' | '未' | '申' | '酉' | '戌' | '亥'
 
 /** 五行 Five Elements */
-export type Felement = '木' | '火' | '土' | '金' | '水'
+// export type Felement = '木' | '火' | '土' | '金' | '水'
+export type Felement = 'wood' | 'fire' | 'earth' | 'metal' | 'water'
 
 /** 陰陽 Polarity */
 export type Polarity = '陽' | '陰'

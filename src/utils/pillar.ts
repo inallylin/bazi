@@ -1,5 +1,5 @@
+import type { Interaction } from '@/static/interaction'
 import type { Stem } from '@/types'
-import type { Interaction } from '@/utils/intereaction'
 
 type ScoreCalculation = {
   interaction: Interaction
