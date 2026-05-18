@@ -1,35 +1,32 @@
-import { Stem } from "@/types"
-
-type Interaction = {
-    
-}
+import type { Stem } from '@/types'
+import type { Interaction } from '@/utils/intereaction'
 
 type ScoreCalculation = {
-    interaction: Interaction
-    formula: (_n: number) => number
-    sort: number
+  interaction: Interaction
+  formula: (_n: number) => number
+  sort: number
 }
 
 type Score = {
-    base: number
-    calculations: ScoreCalculation[]
-    final: number
+  base: number
+  calculations: ScoreCalculation[]
+  final: number
 }
 
-type StemDetail = {
-    id: number
-    name: Stem
-    felement: string
-    polarity: 1 | 0
-    score: Score
+export type StemDetail = {
+  id: number
+  name: Stem
+  felement: string
+  polarity: 1 | 0
+  score: Score
 }
 
-type BranchDetail = {}
+export type BranchDetail = {}
 
-type Pillar = {
-    stem: StemDetail
-    branch: BranchDetail
-    interaction: Interaction
+export type Pillar = {
+  stem: StemDetail
+  branch: BranchDetail
+  interaction: Interaction
 }
 
 
