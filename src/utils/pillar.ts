@@ -1,5 +1,7 @@
 import type { Interaction } from '@/static/interaction'
-import type { Stem } from '@/types'
+import type { Branch, Felement, GrowthStage, Stem } from '@/types'
+import { getBranchElement, getStemFelement, getStemPolarity } from './stemUtils'
+import { getGrowthStage, getHiddenStems } from './branchUtils'
 
 type ScoreCalculation = {
   interaction: Interaction
@@ -14,14 +16,20 @@ type Score = {
 }
 
 export type StemDetail = {
-  id: number
   name: Stem
-  felement: string
+  felement: Felement
   polarity: 1 | 0
   score: Score
 }
 
-export type BranchDetail = {}
+export type BranchDetail = {
+  name: Branch,
+  felement: Felement
+  hiddenStems: (StemDetail & {
+    proportion: number
+  })[],
+  stage: GrowthStage
+}
 
 export type Pillar = {
   stem: StemDetail
@@ -29,41 +37,47 @@ export type Pillar = {
   interaction: Interaction
 }
 
+// 蓋頭/截腳
+const getPillarInteraction = (stemDetail: StemDetail, branch: BranchDetail): Interaction => {
+  return {}
+}
 
-export const createPillar = () => {
-// const pi = {
-//   stem: {
-//     id: 1,
-//     name: '甲',
-//     element: '木',
-//     polarity: '陽',
-//     score: {
-//       base: 1,
-//       calculations: [],
-//       final: 1
-//     },
-//     roots: [{
-//       branch: {},
-//       distance: 0,
-//       stage: '墓' // 這裡指的是對這個天干的十二長生狀態
-//     }]
-//   },
-//   branch: {
-//     id: 10,
-//     name: '酉',
-//     hiddenStems: [{
-//       id: 8,
-//       stem: '辛',
-//       element: '木',
-//       polarity: '陰',
-//       score: {
-//         base: 24,
-//         calculations: [],
-//         final: 1
-//       }
-//     }],
-//     stage: '墓' // 這裡指的是對日主的十二長生狀態
-//   },
-//   interaction: {} // 蓋頭/截腳給自己的天干或地支產生一個calculation
-// }
+const createStemDetail = (stem: Stem): StemDetail => {
+  return {
+    name: stem,
+    felement: getStemFelement(stem),
+    polarity: getStemPolarity(stem),
+    score: {
+      base: 1,
+      calculations: [],
+      final: 1
+    }
+  }
+}
+
+const createBranchDetail = (branch: Branch, params: {
+  onStem: Stem
+}): BranchDetail => {
+  // const stemMapInBranch = getHiddenStems(branch)
+  // const hiddenStems = Object.entries(stemMapInBranch).map
+  return {
+    name: branch,
+    felement: getBranchElement(branch),
+    hiddenStems: [],
+    stage: getGrowthStage(params.onStem, branch)
+  }
+}
+
+export const createPillar = (params: {
+  dayMaster: Stem
+  stem: Stem
+  branch: Branch
+}): Pillar => {
+  const stem = createStemDetail(params.stem)
+  const branch = createBranchDetail(params.branch, { onStem: params.dayMaster })
+  return {
+    stem,
+    branch,
+    interaction: getPillarInteraction(stem, branch)
+  }
 }
