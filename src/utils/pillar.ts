@@ -1,6 +1,6 @@
 import type { Interaction } from '@/static/interaction'
 import type { Branch, Felement, GrowthStage, Stem } from '@/types'
-import { getBranchElement, getStemFelement, getStemPolarity } from './stemUtils'
+import { getBranchFelement, getStemFelement, getStemPolarity } from './stemUtils'
 import { getGrowthStage, getHiddenStems } from './branchUtils'
 
 type ScoreCalculation = {
@@ -62,7 +62,7 @@ const createBranchDetail = (branch: Branch, params: {
   // const hiddenStems = Object.entries(stemMapInBranch).map
   return {
     name: branch,
-    felement: getBranchElement(branch),
+    felement: getBranchFelement(branch),
     hiddenStems: [],
     stage: getGrowthStage(params.onStem, branch)
   }

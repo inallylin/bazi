@@ -2,14 +2,14 @@
 import { ref, computed } from 'vue'
 import {
   Bazi,
-  getStemElement, getBranchElement,
+  getStemFelement, getBranchFelement,
   getStemPolarity, getBranchPolarity,
   getHiddenStems, getGrowthStage,
 } from 'bazi'
-import type { BaziChart, Element, Stem } from 'bazi'
+import type { BaziChart, Felement, Stem } from 'bazi'
 
-const ELEMENT_CLASS: Record<Element, string> = {
-  '木': 'wood', '火': 'fire', '土': 'earth', '金': 'metal', '水': 'water',
+const ELEMENT_CLASS: Record<Felement, string> = {
+  'wood': 'wood', 'fire': 'fire', 'earth': 'earth', 'metal': 'metal', 'water': 'water',
 }
 
 const PILLAR_KEYS = ['year', 'month', 'day', 'hour'] as const
@@ -27,8 +27,8 @@ const pillars = computed(() => {
   if (!chart.value) return []
   return PILLAR_KEYS.map(key => {
     const p      = chart.value![key]
-    const stemEl = getStemElement(p.stem)
-    const brEl   = getBranchElement(p.branch)
+    const stemEl = getStemFelement(p.stem)
+    const brEl   = getBranchFelement(p.branch)
     const hidden = getHiddenStems(p.branch)
     return {
       label:     PILLAR_LABELS[key],
@@ -41,7 +41,7 @@ const pillars = computed(() => {
       stage:     getGrowthStage(p.stem, p.branch),
       hidden:    Object.entries(hidden).map(([s, pct]) => ({
         stem: s as Stem,
-        cls:  ELEMENT_CLASS[getStemElement(s as Stem)],
+        cls:  ELEMENT_CLASS[getStemFelement(s as Stem)],
         pct:  Math.round((pct ?? 0) * 100),
       })),
     }

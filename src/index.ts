@@ -2,7 +2,7 @@ export { Bazi } from '@/Bazi.js'
 export type {
   BaziChart,
   Branch,
-  Element,
+  Felement,
   GrowthStage,
   HiddenStems,
   Pillar,
@@ -12,8 +12,8 @@ export type {
 export {
   getHiddenStems,
   getGrowthStage,
-  getStemElement,
-  getBranchElement,
+  getStemFelement,
+  getBranchFelement,
   getStemPolarity,
   getBranchPolarity,
   getStemIndex,

@@ -19,6 +19,7 @@ export class Bazi {
   constructor(datetime: string | Date) {
     this.datetime = new Date(datetime)
     this.lunarData = lunisolar(datetime)
+    console.log(this.lunarData.char8ex(1))
     if (isNaN(this.datetime.getTime())) {
       throw new Error(`Invalid datetime: "${datetime}"`)
     }

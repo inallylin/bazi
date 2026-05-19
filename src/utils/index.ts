@@ -4,8 +4,8 @@ export {
 } from '@/utils/branchUtils.js'
 
 export {
-  getStemElement,
-  getBranchElement,
+  getStemFelement,
+  getBranchFelement,
   getStemPolarity,
   getBranchPolarity,
   getStemIndex,

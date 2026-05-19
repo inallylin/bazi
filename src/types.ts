@@ -64,3 +64,8 @@ export type HiddenStems = Partial<Record<Stem, number>>
 // 日主決定
 // const tenGods = ['比肩', '劫財', '食神', '傷官', '偏財', '正財', '七殺', '正官', '偏印', '正印'] as const
 // const interactions = [{}] 先拿四柱文字可以對到的所有interaction, 再依座位看合刻關係
+
+
+
+export type StemIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+export type BranchIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11

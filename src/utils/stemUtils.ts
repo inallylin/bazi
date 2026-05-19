@@ -2,26 +2,26 @@ import { STEMS, BRANCHES } from '@/static/index.js'
 import type { Branch, Felement, Polarity, Stem } from '@/types.js'
 
 const STEM_ELEMENTS: Record<Stem, Felement> = {
-  甲: '木', 乙: '木',
-  丙: '火', 丁: '火',
-  戊: '土', 己: '土',
-  庚: '金', 辛: '金',
-  壬: '水', 癸: '水'
+  甲: 'wood', 乙: 'wood',
+  丙: 'fire', 丁: 'fire',
+  戊: 'earth', 己: 'earth',
+  庚: 'metal', 辛: 'metal',
+  壬: 'water', 癸: 'water'
 }
 
 const BRANCH_ELEMENTS: Record<Branch, Felement> = {
-  寅: '木', 卯: '木',
-  巳: '火', 午: '火',
-  辰: '土', 未: '土', 戌: '土', 丑: '土',
-  申: '金', 酉: '金',
-  亥: '水', 子: '水'
+  寅: 'wood', 卯: 'wood',
+  巳: 'fire', 午: 'fire',
+  辰: 'earth', 未: 'earth', 戌: 'earth', 丑: 'earth',
+  申: 'metal', 酉: 'metal',
+  亥: 'water', 子: 'water'
 }
 
 /** Returns the Five Element (五行) of a Heavenly Stem. */
 export const getStemFelement = (stem: Stem): Felement => STEM_ELEMENTS[stem]
 
 /** Returns the Five Element (五行) of an Earthly Branch. */
-export const getBranchElement = (branch: Branch): Felement => BRANCH_ELEMENTS[branch]
+export const getBranchFelement = (branch: Branch): Felement => BRANCH_ELEMENTS[branch]
 
 /** Returns the polarity (陰陽) of a Heavenly Stem. */
 export const getStemPolarity = (stem: Stem): 1 | 0 => {
