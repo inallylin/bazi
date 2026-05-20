@@ -6,8 +6,5 @@ export {
 export {
   getStemFelement,
   getBranchFelement,
-  getStemPolarity,
-  getBranchPolarity,
-  getStemIndex,
-  getBranchIndex
-} from '@/utils/stemUtils.js'
+  getStemPolarity
+} from '@/utils/stemBranch.js'

@@ -3,8 +3,8 @@ import { ref, computed } from 'vue'
 import {
   Bazi,
   getStemFelement, getBranchFelement,
-  getStemPolarity, getBranchPolarity,
-  getHiddenStems, getGrowthStage,
+  getStemPolarity,
+  getHiddenStems, getGrowthStage
 } from 'bazi'
 import type { BaziChart, Felement, Stem } from 'bazi'
 
@@ -50,7 +50,7 @@ const pillars = computed(() => {
 
 function calculate(): void {
   try {
-    chart.value    = new Bazi(datetime.value).chart
+    // chart.value    = new Bazi(datetime.value).chart
     errorMsg.value = ''
   } catch {
     errorMsg.value = '無效的日期時間，請重新輸入。'

@@ -1,5 +1,7 @@
 
+import { getFelementList, getGrowthStageList, getNayinList } from '@/lib/static'
 import type { BranchIndex, Felement, GrowthStage, StemIndex } from '@/types'
+import { t } from './translate';
 
 /**
  * Calculates the 60-cycle index for a given stem and branch index.
@@ -14,15 +16,6 @@ export const getCycleIndex = (stemIndex: number, branchIndex: number): number =>
   return ((stemIndex * 36 + branchIndex * 25) % 60 + 60) % 60
 }
 
-const getFelementList = (): Felement[] => {
-  return [
-    'wood',
-    'fire',
-    'earth',
-    'metal',
-    'water'
-  ]
-}
 
 const getMonthIndexByBranch = (branchIndex: BranchIndex): number => {
   const idx = branchIndex - 2
@@ -45,39 +38,48 @@ export const getStemPolarity = (n: StemIndex): 1 | 0 => {
   return n % 2 === 0 ? 1 : 0
 }
 
-// ── Nayin (納音) Table ────────────────────────────────────────────────────────
-// 30 entries — one per adjacent pair in the 60-jiazi cycle
-const NAYIN: string[] = [
-  '海中金', '爐中火', '大林木', '路旁土', '劍鋒金',
-  '山頭火', '澗下水', '城頭土', '白蠟金', '楊柳木',
-  '泉中水', '屋上土', '霹靂火', '松柏木', '長流水',
-  '沙中金', '山下火', '平地木', '壁上土', '金箔金',
-  '覆燈火', '天河水', '大驛土', '釵釧金', '桑柘木',
-  '大溪水', '沙中土', '天上火', '石榴木', '大海水'
-]
 
-export const getTakeSound = (cycleIndex: number): string | null => {
-  return NAYIN[Math.floor(cycleIndex / 2)] ?? null
+export const getNayin = (cycleIndex: number): string | null => {
+  return getNayinList()[Math.floor(cycleIndex / 2)] ?? null
 }
 
-const getGrowthStageList = (): GrowthStage[] => {
-  return [
-    'birth', //'長生'
-    'bath', // '沐浴'
-    'crown', // '冠帶'
-    'maturity', // '臨官'
-    'prime', // '帝旺'
-    'decline', // '衰'
-    'illness', // '病'
-    'death', // '死'
-    'grave', // '墓'
-    'vanish', // '絕'
-    'embryo', // '胎'
-    'incubation' // '養'
-  ]
+export const getStemGrowthStage = (stem: StemIndex): GrowthStage[] => {
+
+  // 甲己: 0, 5 → 長生在寅 (index 2)
+  // 乙庚: 1, 6 → 長生在卯 (index 3)
+  // 丙辛: 2, 7 → 長生在辰 (index 4)
+  // 丁壬: 3, 8 → 長生在巳 (index 5)
+  // 戊癸: 4, 9 → 長生在午 (index 6)
+  // const baseIndex = Math.floor(stem / 2) * 2 + 2
+  // const growthStages = getGrowthStageList()
+  // return Array(12).fill(0).map((_, i) => growthStages[(baseIndex + i) % 12]!)
 }
 
-const getGrowthStage = (stem: StemIndex, branchIndex: BranchIndex): GrowthStage | null => {
+export const getGrowthStageOnBranch = (stem: StemIndex, branchIndex: BranchIndex): GrowthStage | null => {
   console.log(getGrowthStageList())
   return null
+}
+
+const rotateByIndex = (arr: any[], index: number) => {
+  // 確保輸入的索引在合理範圍內
+  const safeIndex = index % arr.length
+  return arr.slice(safeIndex).concat(arr.slice(0, safeIndex))
+}
+
+// 子丑寅卯 辰巳午未 申酉戌亥
+export const test = (stemIndex: StemIndex) => {
+  // 陽干起於四隅：寅、申、巳、亥，順行
+  // Yang stems start at the four corners: 寅, 申, 巳, 亥, in forward order
+  // { 甲(0): 亥(branch-11), 丙(2): 寅(branch-2), 戊(4): 寅(branch-2), 庚(6): 巳(branch-5), 壬(8): 申(branch-8) }
+  // Yin stem: 由雙生的陽干起點為病，逆行
+  // Yin stem: use the corresponding Yang stem's start point as 'illness' (growth 8th), but reverse the order of growth stages
+  const startPoint = [11, 2, 2, 5, 8][Math.floor(stemIndex / 2)]!
+  console.log(111, stemIndex % 2, JSON.stringify(getGrowthStageList()))
+  if (stemIndex % 2) {
+    console.log('YIN')
+    return rotateByIndex(getGrowthStageList().reverse(), 12 - (startPoint + 8) % 12)
+  // Yang stem
+  } else {
+    return rotateByIndex(getGrowthStageList(), 12 - startPoint)
+  }
 }

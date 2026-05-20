@@ -17,8 +17,18 @@ export type Polarity = '陽' | '陰'
 
 /** 十二長生 Twelve Growth Stages */
 export type GrowthStage =
-  | '長生' | '沐浴' | '冠帶' | '臨官' | '帝旺' | '衰'
-  | '病'  | '死'  | '墓'  | '絕'  | '胎'  | '養'
+  'birth'        // '長生'
+  | 'bath'       // '沐浴'
+  | 'crown'      // '冠帶'
+  | 'maturity'   // '臨官'
+  | 'prime'      // '帝旺'
+  | 'decline'    // '衰'
+  | 'illness'    // '病'
+  | 'death'      // '死'
+  | 'grave'      // '墓'
+  | 'vanish'     // '絕'
+  | 'embryo'     // '胎'
+  | 'incubation' // '養'
 
 /** 四柱 A single pillar (stem + branch pair) */
 export interface Pillar {
