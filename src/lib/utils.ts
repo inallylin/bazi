@@ -14,34 +14,30 @@ export const getCycleIndex = (stemIndex: number, branchIndex: number): number =>
   return ((stemIndex * 36 + branchIndex * 25) % 60 + 60) % 60
 }
 
-export const getStemFelement = (n: StemIndex): Felement => {
-  const s: Felement[] = [
+const getFelementList = (): Felement[] => {
+  return [
     'wood',
     'fire',
     'earth',
     'metal',
     'water'
   ]
-  return s[n / 2]!
 }
 
+const getMonthIndexByBranch = (branchIndex: BranchIndex): number => {
+  const idx = branchIndex - 2
+  return idx < 0 ? idx + 12 : idx
+}
+
+export const getStemFelement = (n: StemIndex): Felement => {
+  return getFelementList()[n / 2]!
+}
 
 export const getBranchFelement = (n: BranchIndex): Felement => {
-  const s: Felement[] = [
-    'water',
-    'earth',
-    'wood',
-    'wood',
-    'earth',
-    'fire',
-    'fire',
-    'earth',
-    'metal',
-    'metal',
-    'earth',
-    'water'
-  ]
-  return s[n]!
+  const idx = getMonthIndexByBranch(n)
+  const felement = getFelementList()[Math.floor(idx / 4)]!
+  const remainder = idx % 4
+  return remainder === 3 ? 'earth' : felement
 }
 
 
@@ -64,7 +60,24 @@ export const getTakeSound = (cycleIndex: number): string | null => {
   return NAYIN[Math.floor(cycleIndex / 2)] ?? null
 }
 
+const getGrowthStageList = (): GrowthStage[] => {
+  return [
+    'birth', //'長生'
+    'bath', // '沐浴'
+    'crown', // '冠帶'
+    'maturity', // '臨官'
+    'prime', // '帝旺'
+    'decline', // '衰'
+    'illness', // '病'
+    'death', // '死'
+    'grave', // '墓'
+    'vanish', // '絕'
+    'embryo', // '胎'
+    'incubation' // '養'
+  ]
+}
 
-const getGrowthStage = (dayMasterIndex: StemIndex, branchIndex: BranchIndex): GrowthStage | null => {
+const getGrowthStage = (stem: StemIndex, branchIndex: BranchIndex): GrowthStage | null => {
+  console.log(getGrowthStageList())
   return null
 }
