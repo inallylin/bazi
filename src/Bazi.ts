@@ -4,7 +4,7 @@ import lunisolar from 'lunisolar'
 import { char8ex } from '@lunisolar/plugin-char8ex'
 import type { Lunisolar } from 'lunisolar'
 import type { BaziChart, Branch, BranchIndex, GrowthStage, HiddenStems, Pillar, Stem, StemIndex } from '@/types'
-import { getSolarTermDate } from './utils/solarTerms';
+import { getSolarTermDate } from './utils/solarTerms'
 // import { createPillar } from './utils/pillar'
 
 // TODO: lunisolar only use for biulding pillars
@@ -66,13 +66,31 @@ export class Bazi {
   //   }
   // }
 
+  // TODO: move to solarTerm utils
+  private getSolarTermCorrection(params: {
+    date: Date
+    target: 'year' | 'month'
+  }): number {
+    if (params.target === 'year')  
+      // Adjust for 立春 (approx Feb 4): before that date, use previous year
+      // const springHead = getSolarTermDate('start_spring', this.birthday.getFullYear())
+      const springHead = getSolarTermDate(1, params.date.getFullYear())
+      return params.date < springHead ? -1 : 0
+    } else {
+      // For month pillar, the solar term boundary is more complex and depends on the month and year
+      // This is a simplified version that checks the "beginning of month" solar term for the given month
+      const month = params.date.getMonth()
+      const termDate = getSolarTermDate(month, params.date.getFullYear())
+      return params.date < termDate ? -1 : 0
+    }
+  }
+
 
   private getYearPillarNumber(): number {
-    // Adjust for 立春 (approx Feb 4): before that date, use previous year
-    const springHead = getSolarTermDate('start_spring', this.birthday.getFullYear())
+    const solarTermCorrection = this.getSolarTermCorrection({ date: this.birthday, target: 'year' }) 
     // Year 4 is the cycle base: 甲子 (stem 0, branch 0)
     const circleBase = 4
-    const yearBase = this.birthday.getFullYear() - circleBase - (springHead < this.birthday ? 1 : 0)
+    const yearBase = this.birthday.getFullYear() - circleBase - solarTermCorrection
     const stemIndex   = yearBase % 10
     const branchIndex = yearBase % 12
     return stemIndex * 10 + branchIndex
@@ -80,36 +98,22 @@ export class Bazi {
 
 
   private getMonthPillarNumber(): number {
+    const solarTermCorrection = this.getSolarTermCorrection({ date: this.birthday, target: 'month' }) 
+    const monthIndex = this.birthday.getMonth() + solarTermCorrection // 0-based month index with solar term correction
+    const yearStemIndex = Math.floor(this.getYearPillarNumber() / 10)
+    // Month branch: 寅 (index 2) corresponds to lunar month 1
+    const branchIndex = (monthIndex + 2) % 12
+    // Month stem derived from year stem group (甲己年起丙寅)
     // 甲己之年丙作首 [0, 5] → 2
     // 乙庚之年戊為頭 [1, 6] → 4
     // 丙辛之歲尋庚上 [2, 7] → 6
     // 丁壬壬寅順水流 [3, 8] → 8
-    // 若問戊癸何方發, 甲寅之上好追求 [4, 9] → 0
-
-    // ── Approximate Solar Term Start Days ──────────���─────────────────────────────
-    // For each Gregorian month: day when the "beginning of month" solar term starts
-    const TERM_DAY: Record<number, number> = {
-      1: 5, 2: 4, 3: 6, 4: 5, 5: 6, 6: 6,
-      7: 7, 8: 7, 9: 8, 10: 8, 11: 7, 12: 7
-    }
-
-    // Returns 0-based month index in the BaZi cycle: 0=寅(Feb), 1=卯(Mar)...11=丑(Jan)
-    const baziMonthIndex = (month: number, day: number): number => {
-      const td = TERM_DAY[month]!
-      if (month === 1) {
-        return day >= td ? 11 : 10; // 丑 or 子
-      }
-      const base = month - 2; // Feb=0, Mar=1 … Dec=10
-      return day >= td ? base : Math.max(0, base - 1);
-    }
-
-    // const mIdx    = baziMonthIndex(birthMonth, birthDay);       // 0=寅
-    // const monthBI = (mIdx + 2) % 12;                            // 寅=2, 卯=3 …
-    // // Month stem base depends on year stem group (甲/己, 乙/庚, 丙/辛, 丁/壬, 戊/癸)
-    // const MONTH_STEM_BASES = [2, 4, 6, 8, 0] // 丙 戊 庚 壬 甲
-    // const monthSI = (MONTH_STEM_BASES[yearSI % 5] + mIdx) % 10;
-    // const monthPillar = makePillar('月', monthSI, monthBI);
+    // 若問戊癸何方發, 甲寅之上好追求 [4, 9] → 0 (10%10 = 0)
+    const stemHead = (yearStemIndex % 5) * 2
+    const stemIndex = (stemHead + monthIndex) % 10
+    return stemIndex * 10 + branchIndex
   }
+
   /**
    * 年柱 Year Pillar
    * TODO: Add solar-term boundary correction (立春).
