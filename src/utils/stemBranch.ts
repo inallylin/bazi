@@ -1,6 +1,6 @@
 
-import { getFelementList, getGrowthStageList, getNayinList } from '@/lib/static'
-import type { BranchIndex, Felement, GrowthStage, StemIndex } from '@/types'
+import { getFelementList, getGrowthStageList, getNayinList } from '@/static'
+import type { StemIndex, BranchIndex, Felement, GrowthStage } from '@/types'
 
 /**
  * Calculates the 60-cycle index for a given stem and branch index.
@@ -23,7 +23,7 @@ export const getCycleIndex = (stemIndex: number, branchIndex: number): number =>
  *
  * 月支對應月令：寅(1月), 卯(2月), 辰(3月), 巳(4月), 午(5月), 未(6月), 申(7月), 酉(8月), 戌(9月), 亥(10月), 子(11月), 丑(12月)
  */
-const getMonthIndexByBranch = (branchIndex: BranchIndex): number => {
+export const getMonthIndexByBranch = (branchIndex: BranchIndex): number => {
   const idx = branchIndex - 1 // 寅(2) should correspond to month index 0, so we subtract 1
   return idx < 0 ? idx + 12 : idx
 }

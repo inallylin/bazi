@@ -51,6 +51,7 @@
   "dependencies": {
     "@lunisolar/plugin-char8ex": "^0.2.5",
     "@lunisolar/plugin-takesound": "^0.1.2",
+    "astronomia": "^4.2.0",
     "lunisolar": "^2.6.0"
   }
 }

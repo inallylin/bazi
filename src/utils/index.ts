@@ -1,7 +1,7 @@
-export {
-  getHiddenStems,
-  getGrowthStage
-} from '@/utils/branchUtils.js'
+// export {
+//   getHiddenStems,
+//   getGrowthStage
+// } from '@/utils/branchUtils.js'
 
 export {
   getStemFelement,

@@ -10,12 +10,12 @@ export type {
   Stem
 } from '@/types'
 export {
-  getHiddenStems,
-  getGrowthStage,
+  // getHiddenStems,
+  // getGrowthStage,
   getStemFelement,
   getBranchFelement,
   getStemPolarity
 } from '@/utils/index'
 
 
-export { STEMS, BRANCHES, GROWTH_STAGE_LIST, EARTHLY_BRANCH_MAP, GROWTH_STAGES } from '@/static/index'
+// export { STEMS, BRANCHES, GROWTH_STAGE_LIST, EARTHLY_BRANCH_MAP, GROWTH_STAGES } from '@/static/index'

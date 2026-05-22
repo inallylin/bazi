@@ -61,7 +61,6 @@ export type HiddenStems = Partial<Record<Stem, number>>
 // 白話文公式： 2 + (生月 + 生時) = 身宮地支 (超過12則減12)
 
 // 五虎遁訣取天干
-// 甲己之年丙作首
 // 乙庚之年戊為頭
 // 丙辛之歲尋庚上
 // 丁壬壬寅順水流
