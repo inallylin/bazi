@@ -13,6 +13,4 @@ declare global {
 
 }
 
-// declare module 'astronomia'
-
 export {}

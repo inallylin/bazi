@@ -15,6 +15,13 @@ export const getCycleIndex = (stemIndex: number, branchIndex: number): number =>
   return ((stemIndex * 36 + branchIndex * 25) % 60 + 60) % 60
 }
 
+export const getStemBranchFromCycleIndex = (cycleIndex: number): [StemIndex, BranchIndex] => {
+  // This is a simplified implementation; a full inverse calculation would be more complex
+  const stemIndex = cycleIndex % 10 as StemIndex
+  const branchIndex = cycleIndex % 12 as BranchIndex
+  return [stemIndex, branchIndex]
+}
+
 /**
  * Calculates the month index based on the branch index, with the starting point at 寅 (index 2).
  * This is used to determine the month of the lunar calendar corresponding to a given branch.

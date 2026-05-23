@@ -32,20 +32,17 @@ export type GrowthStage =
 
 /** 四柱 A single pillar (stem + branch pair) */
 export interface Pillar {
-  stem: Stem;
-  branch: Branch;
+  index: number
+  stem: string
+  branch: string
+  stemIndex: StemIndex
+  branchIndex: BranchIndex
 }
 
+export type PillarType = 'year' | 'month' | 'day' | 'hour'
+
 /** 八字命盤 The full Bazi chart */
-export interface BaziChart {
-  year:  Pillar
-  month: Pillar
-  day:   Pillar
-  hour:  Pillar
-  // embryo: Pillar
-  // own: Pillar
-  // body: Pillar
-}
+export interface BaziChart extends Record<PillarType, Pillar> {}
 
 /** 藏干 Hidden stem entry: stem → strength percentage */
 export type HiddenStems = Partial<Record<Stem, number>>

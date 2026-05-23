@@ -1,28 +1,26 @@
 import lunisolar from 'lunisolar'
-// import { getGrowthStage, getHiddenStems } from '@/utils/index.js'
-// import { BRANCHES, STEMS } from '@/static/index.js'
 import { char8ex } from '@lunisolar/plugin-char8ex'
+import { getSolarTermCorrection } from '@/utils/solarTerms'
+import { t } from '@/libs/translate'
+import { getCycleIndex } from '@/utils/stemBranch'
+import type { BaziChart, Pillar, StemIndex, BranchIndex } from '@/types'
 import type { Lunisolar } from 'lunisolar'
-import type { BaziChart, Branch, BranchIndex, GrowthStage, HiddenStems, Pillar, Stem, StemIndex } from '@/types'
-import { getSolarTermDate } from './utils/solarTerms'
-// import { createPillar } from './utils/pillar'
 
 // TODO: lunisolar only use for biulding pillars
 lunisolar.extend(char8ex)
-
 
 export class Bazi {
   private readonly birthday: Date
   private readonly lunisolarDate: Lunisolar
   private readonly gender: 0 | 1
-  // public readonly chart: BaziChart
-  private readonly pillarNumbers: number[] = []
+  public readonly chart: null | BaziChart = null
 
   /**
    * @param datetime - ISO-8601 string (e.g. '1990-01-01 18:00') or a Date object.
    */
   constructor(datetime: string | Date, params?: {
     gender?: 0 | 1 // 0 for female, 1 for male
+    locale?: 'en' | 'zh' // For future use in formatting outputs
   }) {
     this.birthday = new Date(datetime)
     this.lunisolarDate = lunisolar(datetime)
@@ -30,159 +28,114 @@ export class Bazi {
     if (isNaN(this.birthday.getTime())) {
       throw new Error(`Invalid birthday: "${datetime}"`)
     }
-    this.pillarNumbers = [
-      this.getYearPillarNumber(),
-      // this.getMonthPillarNumber(),
-      // this.getDayPillarNumber(),
-      // this.getHourPillarNumber()
-    ]
-    console.log(this.pillarNumbers)
-    // this.chart = this.buildChart()
+    this.chart = this.buildChart()
   }
 
   // ─── Public accessors ──────────────────────────────────────────────────────
 
-  /** Returns the hidden stems (藏干) for a given branch. */
-  getHiddenStems(branch: Branch): HiddenStems {
-    return getHiddenStems(branch)
-  }
+  // /** Returns the hidden stems (藏干) for a given branch. */
+  // getHiddenStems(branch: Branch): HiddenStems {
+  //   return getHiddenStems(branch)
+  // }
 
-  /** Returns the growth stage (十二長生) of a stem placed in a branch. */
-  getGrowthStage(stem: Stem, branch: Branch): GrowthStage {
-    return getGrowthStage(stem, branch)
-  }
+  // /** Returns the growth stage (十二長生) of a stem placed in a branch. */
+  // getGrowthStage(stem: Stem, branch: Branch): GrowthStage {
+  //   return getGrowthStage(stem, branch)
+  // }
 
   // ─── Chart construction ────────────────────────────────────────────────────
 
+  private buildChart(): BaziChart {
+    const year = this.buildYearPillar()
+    const month = this.buildMonthPillar(year.stemIndex)
+    const day = this.buildDayPillar()
+    const hour = this.buildHourPillar(day.stemIndex)
+    return {
+      year,
+      month,
+      day,
+      hour
+    }
+  }
 
-  // private buildChart(): BaziChart {
-  //   const c8 = this.lunisolarDate.char8ex(1)
-  //   c8.gods.day.toString
-  //   return {
-  //     year:  this.getYearPillar(),
-  //     month: this.getMonthPillar(),
-  //     day:   this.getDayPillar(),
-  //     hour:  this.getHourPillar()
-  //   }
-  // }
-
-  // TODO: move to solarTerm utils
-  private getSolarTermCorrection(params: {
-    date: Date
-    target: 'year' | 'month'
-  }): number {
-    if (params.target === 'year')  
-      // Adjust for 立春 (approx Feb 4): before that date, use previous year
-      // const springHead = getSolarTermDate('start_spring', this.birthday.getFullYear())
-      const springHead = getSolarTermDate(1, params.date.getFullYear())
-      return params.date < springHead ? -1 : 0
-    } else {
-      // For month pillar, the solar term boundary is more complex and depends on the month and year
-      // This is a simplified version that checks the "beginning of month" solar term for the given month
-      const month = params.date.getMonth()
-      const termDate = getSolarTermDate(month, params.date.getFullYear())
-      return params.date < termDate ? -1 : 0
+  private createPillar(stemIndex: StemIndex, branchIndex: BranchIndex): Pillar {
+    return {
+      index: getCycleIndex(stemIndex, branchIndex),
+      stemIndex,
+      branchIndex,
+      stem: t(`stem.${stemIndex}`),
+      branch: t(`branch.${branchIndex}`)
     }
   }
 
 
-  private getYearPillarNumber(): number {
-    const solarTermCorrection = this.getSolarTermCorrection({ date: this.birthday, target: 'year' }) 
+  private buildYearPillar(): Pillar {
+    const solarTermCorrection = getSolarTermCorrection({ date: this.birthday, target: 'year' })
     // Year 4 is the cycle base: 甲子 (stem 0, branch 0)
     const circleBase = 4
-    const yearBase = this.birthday.getFullYear() - circleBase - solarTermCorrection
-    const stemIndex   = yearBase % 10
-    const branchIndex = yearBase % 12
-    return stemIndex * 10 + branchIndex
+    const yearBase = this.birthday.getFullYear() - circleBase + solarTermCorrection
+    const stemIndex   = yearBase % 10 as StemIndex
+    const branchIndex = yearBase % 12 as BranchIndex
+    return this.createPillar(stemIndex, branchIndex)
   }
 
-
-  private getMonthPillarNumber(): number {
-    const solarTermCorrection = this.getSolarTermCorrection({ date: this.birthday, target: 'month' }) 
-    const monthIndex = this.birthday.getMonth() + solarTermCorrection // 0-based month index with solar term correction
-    const yearStemIndex = Math.floor(this.getYearPillarNumber() / 10)
-    // Month branch: 寅 (index 2) corresponds to lunar month 1
-    const branchIndex = (monthIndex + 2) % 12
+  private getBranchStemHead(stemIndex: StemIndex): StemIndex {
     // Month stem derived from year stem group (甲己年起丙寅)
     // 甲己之年丙作首 [0, 5] → 2
     // 乙庚之年戊為頭 [1, 6] → 4
     // 丙辛之歲尋庚上 [2, 7] → 6
     // 丁壬壬寅順水流 [3, 8] → 8
-    // 若問戊癸何方發, 甲寅之上好追求 [4, 9] → 0 (10%10 = 0)
-    const stemHead = (yearStemIndex % 5) * 2
-    const stemIndex = (stemHead + monthIndex) % 10
-    return stemIndex * 10 + branchIndex
+    // 若問戊癸何方發, 甲寅之上好追求 [4, 9] → 0
+    return ((stemIndex + 1) % 5) * 2 as StemIndex
   }
 
-  /**
-   * 年柱 Year Pillar
-   * TODO: Add solar-term boundary correction (立春).
-   */
-  // private getYearPillar(): PillarNumber {
-  //   const y = this.datetime.getFullYear()
-  //   const yearStemIndex = ((y - 4) % 10 + 10) % 10
-  //   const yearBranchIndex = ((y - 4) % 12 + 12) % 12
-  //   const yearPillar = createPillar(yearStemIndex, yearBranchIndex)
-  //   const year = this.datetime.getFullYear()
-  //   // Year 4 is the cycle base: 甲子 (stem 0, branch 0)
-  //   const stemIndex   = (year - 4) % 10
-  //   const branchIndex = (year - 4) % 12
-  //   return {
-  //     stem:   STEMS[(stemIndex + 10) % 10]!,
-  //     branch: BRANCHES[(branchIndex + 12) % 12]!
-  //   }
-  // }
+  private buildMonthPillar(yearStemIndex: StemIndex): Pillar {
+    const solarTermCorrection = getSolarTermCorrection({ date: this.birthday, target: 'month' })
+    // 0-based month index with solar term correction
+    const monthIndex = this.birthday.getMonth() + solarTermCorrection
+    const branchIndex = (monthIndex + 1) % 12 as BranchIndex
 
-  /**
-   * 月柱 Month Pillar
-   * TODO: Implement full solar-term (節氣) boundary logic.
-   */
-  private getMonthPillar(): PillarNumber {
-    // const month = this.datetime.getMonth() // 0-based
-    // const yearStemIndex = STEMS.indexOf(this.getYearPillar().stem)
-    // // Month branch: 寅 (index 2) corresponds to lunar month 1
-    // const branchIndex = (month + 2) % 12
-    // // Month stem derived from year stem group (甲己年起丙寅)
-    // const stemBase = (yearStemIndex % 5) * 2
-    // const stemIndex = (stemBase + month) % 10
-    // return {
-    //   stem:   STEMS[stemIndex]!,
-    //   branch: BRANCHES[branchIndex]!
-    // }
+    const stemHead = this.getBranchStemHead(yearStemIndex)
+    const stemIndex = (stemHead + monthIndex - 1) % 10 as StemIndex
+
+    return this.createPillar(stemIndex, branchIndex)
   }
 
-  /**
-   * 日柱 Day Pillar
-   * TODO: Implement accurate day pillar calculation using Julian Day Number.
-   */
-  private getDayPillar(): PillarNumber {
-    // // Placeholder: compute rough sexagenary day index from a known epoch
-    // const epoch = new Date('1900-01-01')
-    // const days = Math.floor((this.datetime.getTime() - epoch.getTime()) / 86_400_000)
-    // // Jan 1 1900 = 甲戌 (stem 0, branch 10 mapped from conventional tables)
-    // const stemIndex   = (days + 0) % 10
-    // const branchIndex = (days + 10) % 12
-    // return {
-    //   stem:   STEMS[(stemIndex + 10) % 10]!,
-    //   branch: BRANCHES[(branchIndex + 12) % 12]!
-    // }
+  // 高氏日柱公式：由公曆年月日直接求儒略日（JDN），不依賴 epoch 毫秒差，避免時區問題
+  private static julianDayNumber(year: number, month: number, day: number): number {
+    const a = Math.floor((14 - month) / 12)
+    const y = year + 4800 - a
+    const m = month + 12 * a - 3
+    return day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045
   }
 
-  /**
-   * 時柱 Hour Pillar
-   * TODO: Add timezone and local solar time correction.
-   */
-  private getHourPillar(): PillarNumber {
-    // const hour = this.datetime.getHours()
-    // // Each 時辰 spans 2 hours; 子時 (branch 0) starts at 23:00
-    // const branchIndex = Math.floor((hour + 1) / 2) % 12
-    // const dayStemIndex = STEMS.indexOf(this.getDayPillar().stem)
-    // // Hour stem: derived from day stem group (甲己日起甲子時)
-    // const stemBase = (dayStemIndex % 5) * 2
-    // const stemIndex = (stemBase + branchIndex) % 10
-    // return {
-    //   stem:   STEMS[stemIndex]!,
-    //   branch: BRANCHES[branchIndex]!
-    // }
+  private buildDayPillar(): Pillar {
+    // 換日：子時（23:00）起為次日的日柱
+    const targetDate = this.birthday.getHours() >= 23
+      ? new Date(this.birthday.getFullYear(), this.birthday.getMonth(), this.birthday.getDate() + 1)
+      : this.birthday
+
+    // JDN 2415011 = 甲子日基準（1900-01-01 甲戌 JDN=2415021，甲子在其前 10 日）
+    const jdn = Bazi.julianDayNumber(
+      targetDate.getFullYear(),
+      targetDate.getMonth() + 1,
+      targetDate.getDate()
+    )
+    const pos = ((jdn - 2415011) % 60 + 60) % 60
+
+    const stemIndex   = pos % 10 as StemIndex
+    const branchIndex = pos % 12 as BranchIndex
+    return this.createPillar(stemIndex, branchIndex)
+  }
+
+  private buildHourPillar(dayStemIndex: StemIndex): Pillar {
+    const hour = this.birthday.getHours()
+    // Each 時辰 spans 2 hours; 子時 (branch 0) starts at 23:00
+    const branchIndex = Math.floor((hour + 1) / 2) % 12 as BranchIndex
+
+    const stemHead = this.getBranchStemHead(dayStemIndex)
+    const stemIndex = (stemHead + branchIndex - 2) % 10 as StemIndex
+
+    return this.createPillar(stemIndex, branchIndex)
   }
 }
