@@ -33,10 +33,14 @@ export type GrowthStage =
 /** 四柱 A single pillar (stem + branch pair) */
 export interface Pillar {
   index: number
-  stem: string
-  branch: string
-  stemIndex: StemIndex
-  branchIndex: BranchIndex
+  stem: {
+    index: StemIndex
+    name: string
+  }
+  branch: {
+    index: BranchIndex
+    name: string
+  }
 }
 
 export type PillarType = 'year' | 'month' | 'day' | 'hour'
@@ -75,3 +79,6 @@ export type HiddenStems = Partial<Record<Stem, number>>
 
 export type StemIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 export type BranchIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
+
+export type { Interaction, InteractionTemplate, InteractionType, Score, ScoreCalculation } from './interaction'
+export type { ScoreEffect } from '@/types/score'

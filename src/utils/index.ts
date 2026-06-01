@@ -4,7 +4,7 @@
 // } from '@/utils/branchUtils.js'
 
 export {
-  getStemFelement,
-  getBranchFelement,
   getStemPolarity
-} from '@/utils/stemBranch.js'
+} from '@/utils/stem'
+
+export { getStemFelement, getBranchFelement } from '@/utils/felement'

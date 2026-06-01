@@ -1,8 +1,9 @@
 import lunisolar from 'lunisolar'
 import { char8ex } from '@lunisolar/plugin-char8ex'
 import { getSolarTermCorrection } from '@/utils/solarTerms'
-import { t } from '@/libs/translate'
-import { getCycleIndex } from '@/utils/stemBranch'
+import { getCycleIndex } from '@/utils/cycle'
+import { createStemDetail } from '@/utils/stem'
+import { createBranchDetail } from '@/utils/branch'
 import type { BaziChart, Pillar, StemIndex, BranchIndex } from '@/types'
 import type { Lunisolar } from 'lunisolar'
 
@@ -47,9 +48,9 @@ export class Bazi {
 
   private buildChart(): BaziChart {
     const year = this.buildYearPillar()
-    const month = this.buildMonthPillar(year.stemIndex)
+    const month = this.buildMonthPillar(year.stem.index)
     const day = this.buildDayPillar()
-    const hour = this.buildHourPillar(day.stemIndex)
+    const hour = this.buildHourPillar(day.stem.index)
     return {
       year,
       month,
@@ -58,13 +59,16 @@ export class Bazi {
     }
   }
 
-  private createPillar(stemIndex: StemIndex, branchIndex: BranchIndex): Pillar {
+  private createPillar(params: { stemIndex: StemIndex, branchIndex: BranchIndex, pillar: 'year' | 'month' | 'day' | 'hour' }): Pillar {
+    const { stemIndex, branchIndex, pillar } = params
+    const pillarIndex = ['year', 'month', 'day', 'hour'].indexOf(pillar)
     return {
       index: getCycleIndex(stemIndex, branchIndex),
-      stemIndex,
-      branchIndex,
-      stem: t(`stem.${stemIndex}`),
-      branch: t(`branch.${branchIndex}`)
+      stem: createStemDetail(stemIndex, { position: pillarIndex }),
+      branch: createBranchDetail(branchIndex, {
+        onStem: stemIndex,
+        position: pillarIndex
+      })
     }
   }
 
@@ -76,7 +80,11 @@ export class Bazi {
     const yearBase = this.birthday.getFullYear() - circleBase + solarTermCorrection
     const stemIndex   = yearBase % 10 as StemIndex
     const branchIndex = yearBase % 12 as BranchIndex
-    return this.createPillar(stemIndex, branchIndex)
+    return this.createPillar({
+      stemIndex,
+      branchIndex,
+      pillar: 'year'
+    })
   }
 
   private getBranchStemHead(stemIndex: StemIndex): StemIndex {
@@ -98,7 +106,11 @@ export class Bazi {
     const stemHead = this.getBranchStemHead(yearStemIndex)
     const stemIndex = (stemHead + monthIndex - 1) % 10 as StemIndex
 
-    return this.createPillar(stemIndex, branchIndex)
+    return this.createPillar({
+      stemIndex,
+      branchIndex,
+      pillar: 'month'
+    })
   }
 
   // 高氏日柱公式：由公曆年月日直接求儒略日（JDN），不依賴 epoch 毫秒差，避免時區問題
@@ -125,7 +137,11 @@ export class Bazi {
 
     const stemIndex   = pos % 10 as StemIndex
     const branchIndex = pos % 12 as BranchIndex
-    return this.createPillar(stemIndex, branchIndex)
+    return this.createPillar({
+      stemIndex,
+      branchIndex,
+      pillar: 'day'
+    })
   }
 
   private buildHourPillar(dayStemIndex: StemIndex): Pillar {
@@ -136,6 +152,10 @@ export class Bazi {
     const stemHead = this.getBranchStemHead(dayStemIndex)
     const stemIndex = (stemHead + branchIndex - 2) % 10 as StemIndex
 
-    return this.createPillar(stemIndex, branchIndex)
+    return this.createPillar({
+      stemIndex,
+      branchIndex,
+      pillar: 'hour'
+    })
   }
 }

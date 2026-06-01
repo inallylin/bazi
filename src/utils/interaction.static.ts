@@ -1,30 +1,4 @@
-import type { Branch, Felement, Stem } from '@/types'
-import type { BranchDetail, StemDetail } from '@/utils/pillar'
-
-type InteractionType =
-  'orientation' | // 三會: 春木夏火秋金冬水，一方的三個地支同時出現, 2 缺一不可
-  'season' | // 三合: 長生+地旺+墓庫, 全合1.8半合1.25(等流年大運生效)
-  'merge' | // 合 1.4
-  'clash' | // 沖 0.5
-  'punish' | // 刑 0.8 合絆=0.8 但作用不太一樣
-  'harm' | // 害 0.9 妒合=0.9 但作用不太一樣
-  'break' // 破 0.95
-
-// 'stem'類型專門用於天干的合化關係
-export type Interaction<T extends 'stem' | 'branch' = 'branch'> = {
-  title: string
-  type: InteractionType | 'stem'
-  memberMap: Partial<Record<T extends 'stem' ? Stem : Branch, (T extends 'stem' ? StemDetail : BranchDetail)[]>> // 參與這個關係的地支，null表示缺失
-  transform: Felement | null // 如果這個關係會產生質變
-}
-
-type InteractionTemplate<T extends InteractionType | 'stem' = InteractionType> = {
-  title: string
-  description: string
-  type: T
-  members: T extends 'stem' ? Stem[] : Branch[]
-  transform: Felement | null
-}
+import type { InteractionTemplate } from '@/types/interaction'
 
 export const getStemInteractionList = (): InteractionTemplate<'stem'>[] => {
   return [

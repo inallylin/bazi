@@ -1,5 +1,0 @@
-export { getNayinList } from '@/static/nayin'
-export { getFelementList } from '@/static/felement'
-export { getGrowthStageList } from '@/static/growthStages'
-export { getHiddenStems } from '@/static/hiddenStems'
-export { getBranchInteractionList, getStemInteractionList } from '@/static/interaction'

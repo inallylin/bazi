@@ -1,0 +1,4 @@
+{
+  "js/ts.preferences.quoteStyle": "single",
+  "js/ts.preferences.importModuleSpecifier": "non-relative"
+}

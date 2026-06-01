@@ -1,7 +1,6 @@
-import { getBranchInteractionList, getStemInteractionList } from '@/static/interaction'
-import type { Interaction } from '@/static/interaction'
+import { getBranchInteractionList, getStemInteractionList } from '@/utils/interaction.static'
+import type { BranchIndex, Interaction, StemIndex } from '@/types'
 import type { Branch, Felement, Stem } from '@/types'
-import type { StemDetail, BranchDetail } from '@/utils/pillar'
 
 
 type Calculation = {
@@ -9,7 +8,7 @@ type Calculation = {
   transform: Felement | null // 關係導致的質變（例如三會導致的五行轉化）
 }
 
-export const getStemInteractions = (stem: Stem): Interaction<'stem'>[] => {
+export const getStemInteractions = (stemIndex: StemIndex): Interaction<'stem'>[] => {
   const allInteractions = getStemInteractionList()
   return allInteractions
     .filter(interaction => interaction.members.includes(stem))
@@ -26,7 +25,7 @@ export const getStemInteractions = (stem: Stem): Interaction<'stem'>[] => {
     })
 }
 
-export const getBranchInsteractions = (branch: Branch): Interaction<'branch'>[] => {
+export const getBranchInsteractions = (branchIndex: BranchIndex): Interaction<'branch'>[] => {
   const allInteractions = getBranchInteractionList()
   return allInteractions
     .filter(interaction => interaction.members.includes(branch))
@@ -41,6 +40,10 @@ export const getBranchInsteractions = (branch: Branch): Interaction<'branch'>[] 
         transform: interaction.transform
       }
     })
+}
+
+export const getPillarInteraction = (_stemIndex: StemIndex, _branchIndex: BranchIndex): Interaction => {
+  return {}
 }
 
 // 妒合=0.9, 合絆=0.8, 沒有質變
